@@ -1,5 +1,6 @@
 "use server";
 
+import Thread from "../Models/thread.model";
 import User from "../Models/user.model";
 import { connectDB } from "../mongoose";
 import { revalidatePath } from "next/cache";
@@ -49,19 +50,42 @@ export async function updateUser({
   }
 }
 
-
-export async function fetchUser(userId: string){
-
-  try{
+export async function fetchUser(userId: string) {
+  try {
     connectDB();
 
-    return await User.findOne({id: userId})
+    return await User.findOne({ id: userId });
     // .populate({
     //   path:'communities',
     //   model:Community
     // })
-  }catch(error:any) {
+  } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }
+}
 
+export async function fetchUserPosts(userId: string) {
+  try {
+    connectDB();
+
+    // TODO Populate Community
+    const threads = await User.findOne({ id: userId }).populate({
+    path: 'threads',
+    model: Thread,
+    populate: {
+      path:"children",
+      model:Thread,
+      populate:{
+        path:"author",
+        model:User,
+        select:'name image id'
+      }
+    }
+    });
+
+    return threads;
+
+  } catch (error:any) {
+    throw new Error(`Failed to fetch user posts: ${error.message}`);
+  }
 }

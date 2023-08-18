@@ -23,7 +23,7 @@ export async function createCommunity(
 ) {
   try {
     connectDB();
-
+console.log("createCommunity")
     // Find the user with the provided unique id
     const user = await User.findOne({ id: createdById });
 

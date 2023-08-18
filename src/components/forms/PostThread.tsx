@@ -22,6 +22,7 @@ import { usePathname, useRouter } from 'next/navigation'
 // import { updateUser } from '@/lib/actions/user.actions'
 import { ThreadValidation } from '@/lib/validations/thread'
 import { createThread } from '@/lib/actions/thread.actions'
+import { useOrganization } from '@clerk/nextjs'
 
 
 interface Props {
@@ -46,6 +47,7 @@ export default function PostThread({userId}:{userId:string}) {
     const router = useRouter()
     const pathname = usePathname()
 
+    let {organization} = useOrganization()
 
 
 
@@ -63,13 +65,13 @@ export default function PostThread({userId}:{userId:string}) {
     })
 
 
-
+// Kuch to garbar ha yahan 
 const onSubmit = async(values:z.infer<typeof ThreadValidation>) => {
-
+console.log(organization?.id+'<- organizationId')
     await createThread({
         text:values.thread,
         author:userId,
-        communityId:null,
+        communityId:(organization)?organization?.id:null,
         path:pathname
     
     }) 
